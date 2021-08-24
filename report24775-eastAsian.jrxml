@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report24775" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="organization" mode="Opaque" backcolor="#CCCCFF">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{tenantCount}.intValue() % 2 == 0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#99FF99"/>
+		</conditionalStyle>
+	</style>
+	<style name="column" mode="Opaque" backcolor="#999999"/>
+	<subDataset name="tenant">
+		<parameter name="tenantName" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["root"]]></defaultValueExpression>
+		</parameter>
+		<queryString language="SQL">
+			<![CDATA[select t.tenantname, u.username, r.rolename from jiuser u
+inner join jitenant t on u.tenantid = t.id
+inner join jiuserrole j on j.userid = u.id
+inner join jirole r on j.roleid = r.id
+where t.tenantname = $P{tenantName}
+order by 1, 2, 3]]>
+		</queryString>
+		<field name="tenantname" class="java.lang.String"/>
+		<field name="username" class="java.lang.String"/>
+		<field name="rolename" class="java.lang.String"/>
+		<group name="tenantname">
+			<groupExpression><![CDATA[$F{tenantname}]]></groupExpression>
+		</group>
+		<group name="username">
+			<groupExpression><![CDATA[$F{username}]]></groupExpression>
+		</group>
+	</subDataset>
+	<parameter name="tenantId" class="java.util.Collection">
+		<defaultValueExpression><![CDATA[java.util.Arrays.asList(new Integer[] {3,4,1091,7268,7869,8003,8137})]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select t.id, t.tenantname, u.username, r.rolename from jiuser u
+inner join jitenant t on u.tenantid = t.id
+inner join jiuserrole j on j.userid = u.id
+inner join jirole r on j.roleid = r.id
+where $X{IN, t.id, tenantId}
+order by 1, 3, 4]]>
+	</queryString>
+	<field name="tenantname" class="java.lang.String"/>
+	<field name="username" class="java.lang.String"/>
+	<field name="rolename" class="java.lang.String"/>
+	<variable name="tenantCount" class="java.lang.Integer" incrementType="Group" incrementGroup="organization" calculation="Count">
+		<variableExpression><![CDATA[new Integer($V{tenantCount}.intValue()+1)]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<group name="organization">
+		<groupExpression><![CDATA[$F{tenantname}]]></groupExpression>
+		<groupFooter>
+			<band height="100">
+				<componentElement>
+					<reportElement x="0" y="0" width="572" height="100"/>
+					<fc:chart xmlns:fc="http://jaspersoft.com/fusion" xsi:schemaLocation="http://jaspersoft.com/fusion http://jaspersoft.com/schema/fusion.xsd" type="Column3D">
+						<fc:chartDataset>
+							<dataset>
+								<datasetRun subDataset="tenant">
+									<datasetParameter name="tenantName">
+										<datasetParameterExpression><![CDATA[$F{tenantname}]]></datasetParameterExpression>
+									</datasetParameter>
+								</datasetRun>
+							</dataset>
+							<fc:item>
+								<fc:seriesExpression><![CDATA[$F{username}]]></fc:seriesExpression>
+								<fc:labelExpression><![CDATA[$F{tenantname}]]></fc:labelExpression>
+								<fc:valueExpression><![CDATA[$V{username_COUNT}]]></fc:valueExpression>
+							</fc:item>
+						</fc:chartDataset>
+					</fc:chart>
+				</componentElement>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="user">
+		<groupExpression><![CDATA[$F{username}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement style="column" x="0" y="0" width="200" height="20"/>
+				<textElement/>
+				<text><![CDATA[Organization]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column" x="200" y="0" width="200" height="20"/>
+				<textElement/>
+				<text><![CDATA[User]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column" x="400" y="0" width="172" height="20"/>
+				<textElement/>
+				<text><![CDATA[Roles]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement style="organization" x="0" y="0" width="572" height="20"/>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="200" height="20"/>
+					<textElement>
+						<font fontName="Arial Unicode MS" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tenantname}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="200" y="0" width="200" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="400" y="0" width="172" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{rolename}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="200" splitType="Stretch">
+			<componentElement>
+				<reportElement x="0" y="0" width="572" height="200"/>
+				<fc:chart xmlns:fc="http://jaspersoft.com/fusion" xsi:schemaLocation="http://jaspersoft.com/fusion http://jaspersoft.com/schema/fusion.xsd" type="Column3D">
+					<fc:chartDataset>
+						<fc:item>
+							<fc:seriesExpression><![CDATA[$F{tenantname}]]></fc:seriesExpression>
+							<fc:labelExpression><![CDATA[$F{username}]]></fc:labelExpression>
+							<fc:valueExpression><![CDATA[$V{user_COUNT}]]></fc:valueExpression>
+						</fc:item>
+					</fc:chartDataset>
+				</fc:chart>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>
